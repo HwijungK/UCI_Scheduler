@@ -336,22 +336,17 @@ filter_time_conflict <- function(sched.l) {
   for(c1 in 1: (length(class.v) - 1)) {
     for (c2 in (c1+1):length(class.v)) {
       compatable = T
-      # intervals <- c(char_to_int_v(filter(dep.data, Code == class.v[c1])$intervals[1]),
-      #                char_to_int_v(filter(dep.data, Code == class.v[c2])$intervals[1]))
-      # for(i1 in 1:(length(intervals)-1)) {
-      #   for (i2 in (i1+1):length(intervals)) {
-      #     if (is.na(intervals[i1])|is.na(intervals[i2])|int_overlaps(intervals[i1], intervals[i2])) {
-      #       compatable = F
-      #       break
-      #     }
-      #   }
-      #   if (!compatable) break
-      # }
-      intervals <- filter(dep.data, Code == class.v[c1] | Code == class.v[c2])$intervals[1] |>
-        strsplit("\\|") |>
-        unlist()
-      int.combos <- combn(intervals, 2)
-      
+      intervals <- c(char_to_int_v(filter(dep.data, Code == class.v[c1])$intervals[1]),
+                     char_to_int_v(filter(dep.data, Code == class.v[c2])$intervals[1]))
+      for(i1 in 1:(length(intervals)-1)) {
+        for (i2 in (i1+1):length(intervals)) {
+          if (is.na(intervals[i1])|is.na(intervals[i2])|int_overlaps(intervals[i1], intervals[i2])) {
+            compatable = F
+            break
+          }
+        }
+        if (!compatable) break
+      }
       if (compatable) {
         class.compatable.df[c1,1] <- paste(class.compatable.df[c1,1], trimws(class.v[c2]))
         class.compatable.df[c2,1] <- paste(class.compatable.df[c2,1], trimws(class.v[c1]))
