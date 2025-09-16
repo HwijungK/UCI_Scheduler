@@ -376,7 +376,7 @@ filter_time_conflict <- function(sched.l) {
 
 #### TESTING
 start.time <- Sys.time()
-sched.l <- get_sched_combo(c("bio sci 93", "i&c sci 32", "I&c sci 6b"))
+sched.l <- get_sched_combo(c("bio sci 93", "Math 2b", "I&c sci 6b"))
 cat("Time: ", as.character(Sys.time() - start.time), "\n")
 
 #using bio sci 93, i&c sci 32, I&C sci 6b
