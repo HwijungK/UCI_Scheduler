@@ -146,7 +146,7 @@ char_to_int_v <- function(char) {
 
 
 
-create_date_time <- function() {
+create_date_time <- function(dep.data) {
   # splits time column into vector of days ending with the time period
   test <- dep.data |> 
     mutate(
@@ -162,7 +162,7 @@ create_date_time <- function() {
   test <- test[[1]]
   # convert test vector into dates
   date.list <- list()
-  intervals.col <- NULL
+  intervals.col.l <- list()
   for(i in 1:length(test)) {
     #for(i in 7827) {
     #for(i in 22) {
@@ -217,13 +217,14 @@ create_date_time <- function() {
         }
       }
       #print(interval.list)
-      intervals.col[i] = int_v_to_char(interval.list)
+      intervals.col.l[[i]] = interval.list
     }
     else {
-      intervals.col[i] = NA
+      intervals.col.l[[i]] = NA
     }
   }
-  dep.data <- cbind(dep.data, intervals=intervals.col)
+  dep.data <- tibble::add_column(dep.data, intervals=intervals.col.l)
+  return(dep.data)
 }
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE CLASS SECTION COMBONATIONS
@@ -336,8 +337,8 @@ filter_time_conflict <- function(sched.l) {
   for(c1 in 1: (length(class.v) - 1)) {
     for (c2 in (c1+1):length(class.v)) {
       compatable = T
-      intervals <- c(char_to_int_v(filter(dep.data, Code == class.v[c1])$intervals[1]),
-                     char_to_int_v(filter(dep.data, Code == class.v[c2])$intervals[1]))
+      intervals <- c((filter(dep.data, Code == class.v[c1])$intervals[[1]]),
+                     (filter(dep.data, Code == class.v[c2])$intervals[[1]]))
       for(i1 in 1:(length(intervals)-1)) {
         for (i2 in (i1+1):length(intervals)) {
           if (is.na(intervals[i1])|is.na(intervals[i2])|int_overlaps(intervals[i1], intervals[i2])) {

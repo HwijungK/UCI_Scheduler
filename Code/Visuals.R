@@ -10,16 +10,14 @@ cal.plots <- list()
     
     codes.v <- NULL
     for(code in courses.in.sched$Code) {
-      class.count <- courses.in.sched[courses.in.sched$Code == code,]$intervals |>
-        str_split("\\|") |>
-        unlist() |>
+      class.count <- courses.in.sched[courses.in.sched$Code == code,]$intervals[[1]] |>
         length() |>
         (\(x) x/2)()
       codes.v <- append(codes.v, rep(code, class.count))
     }
     
-    i.start <- (int_start(char_to_int_v(courses.in.sched$intervals)))
-    i.end <- (int_end(char_to_int_v(courses.in.sched$intervals)))
+    i.start <- (int_start(courses.in.sched$intervals[[1]]))
+    i.end <- (int_end(courses.in.sched$intervals[[1]]))
     day_of_week <- wday(i.start)
     start_times <- hour(i.start) + (minute(i.start) * 1/60)
     end_times <- hour(i.end) + (minute(i.end) * 1/60)
