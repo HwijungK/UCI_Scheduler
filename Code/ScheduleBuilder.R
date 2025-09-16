@@ -287,7 +287,7 @@ get_class_combo <- function(name) {
 get_sched_combo <- function(names) {
   ####
   #debug.start.time <- Sys.time()
-  names <- c(c("bio sci 90L", "bio sci 93"))
+  #names <- c(c("bio sci 90L", "bio sci 93"))
   
   # create a list where each entry is a course containing a vector of viable class combos
   class.combos.l <- list()
