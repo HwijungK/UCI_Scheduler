@@ -321,14 +321,31 @@ get_sched_combo <- function(names) {
   #debug.start.time <- Sys.time();
   
   # create a dataframe where row name is each class and one column contains string representations of all classes that conflict with said class
+  sched.status.open.check.l <- filter_status(sched.l, "OPEN")
+  sched.l <- sched.l[sched.status.open.check.l]
   
   sched.time.check.l<-filter_time_conflict(sched.l)
-  
   sched.l <- sched.l[sched.time.check.l]
   
   return(sched.l)
 }
+#takes in a list of possible schedules and returns a logical vector for classes that are not full
+filter_status <- function(sched.l, status) {
+  lapply(sched.l, \(x) {
+    statuses <- filter(dep.data, Code %in% x)$Status
+    #print(statuses)
+    #print(filter(dep.data, Code %in% x))
+    if (all(statuses %in% status)) {
+      return(T)
+    }
+    else {
+      return(F)
+    }
+  }) |>
+    unlist()
+}
 
+# takes in a list of possible schedules and returns a logical vector
 filter_time_conflict <- function(sched.l) {
   class.v <- unique(unlist(sched.l))
   class.compatable.df <- data.frame(compatable=rep("", length(class.v)))
@@ -387,7 +404,7 @@ filter_time_conflict <- function(sched.l) {
 #### TESTING
 
 start.time <- Sys.time()
-sched.l <- get_sched_combo(c("bio sci 93", "writing 60", "I&c sci 6b"))
+sched.l <- get_sched_combo(c("I&C Sci 32"))
 cat("Time: ", as.character(Sys.time() - start.time), "\n")
 
 #using bio sci 93, i&c sci 32, I&C sci 6b
@@ -396,12 +413,4 @@ cat("Time: ", as.character(Sys.time() - start.time), "\n")
 #4 "idk lmao
 
 
-intervals <- c((filter(dep.data, Code == 33398)$intervals[[1]]),
-                   (filter(dep.data, Code == class.v[c2])$intervals[[1]]))
-int_combn <- combn(as.list(intervals), 2,simplify = T)
-compatable <- apply(int_combn, 2, \(x) {
-  lubridate::int_overlaps(x[[1]], x[[2]])
-}) |>
-  (\(x) !x)() |>
-  all()
 

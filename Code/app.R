@@ -9,13 +9,15 @@ ui <- dashboardPage(
   ),
   dashboardBody(
     box(
-      actionButton("inc.plot.index", "Next"),
+      width = 10,
       uiOutput("slider"),
-      actionButton("dec.plot.index", "Prev")
+      actionButton("dec.plot.index", "Prev"),
+      actionButton("inc.plot.index", "Next")
+      
     ),
     box(
       width = 10,
-      height = 700,
+      height =800,
       plotOutput("cal.plot", height = 700),
       textOutput("debug")
     )
@@ -46,7 +48,8 @@ server <- function(input, output, session) {
                 max = length(cal.plots),
                 value = i(),
                 step = 1,
-                animate = T)
+                animate = F,
+                width = '80%')
   })
   
   output$cal.plot <- renderPlot({

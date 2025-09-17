@@ -1,5 +1,3 @@
-install.packages("httr2")
-install.packages("jsonlite")
 
 library(httr2)
 library(jsonlite)
@@ -15,10 +13,10 @@ soc_response <- request(base_url) |>
   req_perform() |>
   resp_body_json()
 
-# soc_response |>
-#   pluck('data', 'schools', 8, 'departments', 2, 'courses', 3, 'sections', 1) |>
-#   glimpse()
-# 
+soc_response |>
+  pluck('data', 'schools', 8, 'departments', 2, 'courses', 3, 'sections', 1) |>
+  glimpse()
+
 # # returns glimpse of school
 # soc_response |>
 #   pluck('data', 'schools', 9, 'departments', 2, 'courses', 5, 'sections', 1, 'meetings') |>
@@ -75,9 +73,7 @@ d <- soc_response |>
                                     Nor = sec.list |> pluck('numNewOnlyReserved'),
                                     Rstr = sec.list |> pluck('restrictions'),
                                     Textbooks = ":)",
-                                    Status = sec.list <- pluck('status'),
-                                    
-                                    
+                                    Status = sec.list |> pluck('status'),
                                     
                                     deptCode = course.list |> pluck('deptCode'),
                                     courseTitle = course.list |> pluck('courseTitle'),
