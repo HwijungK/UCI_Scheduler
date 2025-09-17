@@ -339,21 +339,30 @@ filter_time_conflict <- function(sched.l) {
       compatable = T
       intervals <- c((filter(dep.data, Code == class.v[c1])$intervals[[1]]),
                      (filter(dep.data, Code == class.v[c2])$intervals[[1]]))
-      for(i1 in 1:(length(intervals)-1)) {
-        for (i2 in (i1+1):length(intervals)) {
-          if (is.na(intervals[i1])|is.na(intervals[i2])|int_overlaps(intervals[i1], intervals[i2])) {
-            compatable = F
-            break
-          }
-        }
-        if (!compatable) break
+      int_combn <- combn(as.list(intervals), 2,simplify = T)
+      if (any(is.na(intervals))) {
+        compatable <- FALSE
       }
+      else {
+        compatable <- apply(int_combn, 2, \(x) {
+        lubridate::int_overlaps(x[[1]], x[[2]])
+        }) |>
+          (\(x) !x)() |>
+          all()
+      }
+      
+      ## DEBUG
+      if (is.na(compatable)) {
+        print(intervals)
+        print(!any(is.na(intervals)))
+      }
+      
       if (compatable) {
         class.compatable.df[c1,1] <- paste(class.compatable.df[c1,1], trimws(class.v[c2]))
         class.compatable.df[c2,1] <- paste(class.compatable.df[c2,1], trimws(class.v[c1]))
       }
     }
-  }
+}
   
   # removes schedules that have overlapping classes on sched.l
   sched.time.check.l <- rep(T, length(sched.l))
@@ -377,7 +386,7 @@ filter_time_conflict <- function(sched.l) {
 
 #### TESTING
 start.time <- Sys.time()
-sched.l <- get_sched_combo(c("bio sci 93", "Math 2b", "I&c sci 6b"))
+sched.l <- get_sched_combo(c("bio sci 93", "writing 60", "I&c sci 6b"))
 cat("Time: ", as.character(Sys.time() - start.time), "\n")
 
 #using bio sci 93, i&c sci 32, I&C sci 6b
@@ -385,7 +394,13 @@ cat("Time: ", as.character(Sys.time() - start.time), "\n")
 #12 # improved char_to_interval 
 #4 "idk lmao
 
-x <- combn (10, 2, simplify = T)
 
-
+intervals <- c((filter(dep.data, Code == 33398)$intervals[[1]]),
+                   (filter(dep.data, Code == class.v[c2])$intervals[[1]]))
+int_combn <- combn(as.list(intervals), 2,simplify = T)
+compatable <- apply(int_combn, 2, \(x) {
+  lubridate::int_overlaps(x[[1]], x[[2]])
+}) |>
+  (\(x) !x)() |>
+  all()
 
