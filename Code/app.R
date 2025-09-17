@@ -27,16 +27,15 @@ server <- function(input, output, session) {
   observeEvent(input$inc.plot.index, {
     old_val <- i()
     i(min(old_val + 1, length(cal.plots)))  # cap at max
-    cat("Next Button Clicked! old i:", old_val, " new i:", i(), "\n")
+    #cat("Next Button Clicked! old i:", old_val, " new i:", i(), "\n")
   })
   
   observeEvent(input$dec.plot.index, {
     old_val <- i()
     i(max(old_val - 1, 1))  # cap at min
-    cat("Previous Button Clicked! old i:", old_val, " new i:", i(), "\n")
+    #cat("Previous Button Clicked! old i:", old_val, " new i:", i(), "\n")
   })
   
-  # allow manual slider changes too
   observeEvent(input$plot.index.slider, {
     i(input$plot.index.slider)
   })
