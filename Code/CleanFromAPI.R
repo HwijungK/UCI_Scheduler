@@ -15,25 +15,25 @@ soc_response <- request(base_url) |>
   req_perform() |>
   resp_body_json()
 
-soc_response |>
-  pluck('data', 'schools', 8, 'departments', 2, 'courses', 3, 'sections', 1) |>
-  glimpse()
-
-# returns glimpse of school
-soc_response |>
-  pluck('data', 'schools', 9, 'departments', 2, 'courses', 5, 'sections', 1, 'meetings') |>
-  View()
-
-# returns list of school names
-soc_response |> 
-  pluck('data', 'schools',) |>
-    map_dfr(
-      function(x) {
-        tibble(
-          schoolName = x |> pluck("schoolName")
-        )
-      }
-    )
+# soc_response |>
+#   pluck('data', 'schools', 8, 'departments', 2, 'courses', 3, 'sections', 1) |>
+#   glimpse()
+# 
+# # returns glimpse of school
+# soc_response |>
+#   pluck('data', 'schools', 9, 'departments', 2, 'courses', 5, 'sections', 1, 'meetings') |>
+#   View()
+# 
+# # returns list of school names
+# soc_response |> 
+#   pluck('data', 'schools',) |>
+#     map_dfr(
+#       function(x) {
+#         tibble(
+#           schoolName = x |> pluck("schoolName")
+#         )
+#       }
+#     )
 
 d <- soc_response |>
   pluck('data', 'schools') |>
@@ -95,8 +95,3 @@ d <- soc_response |>
       )
     }
   )
-
-
-y |>
-  lapply(\(x) {x[c('days', 'startTime','endTime')]}) |> unlist() |> paste(c(" ", ":", "-", ":", " "), recycle0 = T, collapse = "", sep = "") |>
-  (\(s) {gsub(":0-", ":00-", s)})()

@@ -146,7 +146,7 @@ char_to_int_v <- function(char) {
 
 
 
-create_date_time <- function() {
+create_date_time <- function(dep.data) {
   # splits time column into vector of days ending with the time period
   test <- dep.data |> 
     mutate(
@@ -162,7 +162,7 @@ create_date_time <- function() {
   test <- test[[1]]
   # convert test vector into dates
   date.list <- list()
-  intervals.col <- NULL
+  intervals.col.l <- list()
   for(i in 1:length(test)) {
     #for(i in 7827) {
     #for(i in 22) {
@@ -217,13 +217,14 @@ create_date_time <- function() {
         }
       }
       #print(interval.list)
-      intervals.col[i] = int_v_to_char(interval.list)
+      intervals.col.l[[i]] = interval.list
     }
     else {
-      intervals.col[i] = NA
+      intervals.col.l[[i]] = NA
     }
   }
-  dep.data <- cbind(dep.data, intervals=intervals.col)
+  dep.data <- tibble::add_column(dep.data, intervals=intervals.col.l)
+  return(dep.data)
 }
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE CLASS SECTION COMBONATIONS
@@ -336,23 +337,32 @@ filter_time_conflict <- function(sched.l) {
   for(c1 in 1: (length(class.v) - 1)) {
     for (c2 in (c1+1):length(class.v)) {
       compatable = T
-      intervals <- c(char_to_int_v(filter(dep.data, Code == class.v[c1])$intervals[1]),
-                     char_to_int_v(filter(dep.data, Code == class.v[c2])$intervals[1]))
-      for(i1 in 1:(length(intervals)-1)) {
-        for (i2 in (i1+1):length(intervals)) {
-          if (is.na(intervals[i1])|is.na(intervals[i2])|int_overlaps(intervals[i1], intervals[i2])) {
-            compatable = F
-            break
-          }
-        }
-        if (!compatable) break
+      intervals <- c((filter(dep.data, Code == class.v[c1])$intervals[[1]]),
+                     (filter(dep.data, Code == class.v[c2])$intervals[[1]]))
+      int_combn <- combn(as.list(intervals), 2,simplify = T)
+      if (any(is.na(intervals))) {
+        compatable <- FALSE
       }
+      else {
+        compatable <- apply(int_combn, 2, \(x) {
+        lubridate::int_overlaps(x[[1]], x[[2]])
+        }) |>
+          (\(x) !x)() |>
+          all()
+      }
+      
+      ## DEBUG
+      if (is.na(compatable)) {
+        print(intervals)
+        print(!any(is.na(intervals)))
+      }
+      
       if (compatable) {
         class.compatable.df[c1,1] <- paste(class.compatable.df[c1,1], trimws(class.v[c2]))
         class.compatable.df[c2,1] <- paste(class.compatable.df[c2,1], trimws(class.v[c1]))
       }
     }
-  }
+}
   
   # removes schedules that have overlapping classes on sched.l
   sched.time.check.l <- rep(T, length(sched.l))
@@ -375,13 +385,23 @@ filter_time_conflict <- function(sched.l) {
 
 
 #### TESTING
-ant1
+
+start.time <- Sys.time()
+sched.l <- get_sched_combo(c("bio sci 93", "writing 60", "I&c sci 6b"))
+cat("Time: ", as.character(Sys.time() - start.time), "\n")
+
 #using bio sci 93, i&c sci 32, I&C sci 6b
 #16 # original
 #12 # improved char_to_interval 
 #4 "idk lmao
 
-x <- combn (10, 2, simplify = T)
 
-
+intervals <- c((filter(dep.data, Code == 33398)$intervals[[1]]),
+                   (filter(dep.data, Code == class.v[c2])$intervals[[1]]))
+int_combn <- combn(as.list(intervals), 2,simplify = T)
+compatable <- apply(int_combn, 2, \(x) {
+  lubridate::int_overlaps(x[[1]], x[[2]])
+}) |>
+  (\(x) !x)() |>
+  all()
 
