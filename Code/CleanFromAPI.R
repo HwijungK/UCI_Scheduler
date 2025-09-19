@@ -159,7 +159,7 @@ search_course <- function(depcodes, coursenums) {
 ########################################################################################################################################################
 
 
-soc_response <- get_soc_responce('2025', 'Fall')
+soc_response <- get_soc_response('2025', 'Fall')
 
 dept.school <- soc_response |>
   pluck('data', 'schools') |>

@@ -325,12 +325,6 @@ filter_time_conflict <- function(dep.data, sched.l) {
 # sched.l <- get_sched_combo(c("I&C SCI", "I&C SCI", "WRITING", "MATH"), c("32", "6B", "60", "3A"))
 # cat("Time: ", as.character(Sys.time() - start.time), "\n")
 
-start.time <- Sys.time()
-dep.data <- search_course(c("BIO SCI", "BIO SCI", "MATH"), c("2A", "93", "3A")) |>
-  create_date_time()
-sched.l <- get_sched_combo(c("BIO SCI", "BIO SCI", "MATH"), c("2A", "93", "3A"))
-cat("Time: ", as.character(Sys.time() - start.time), "\n")
-
 #using bio sci 93, i&c sci 32, I&C sci 6b
 #16 # original
 #12 # improved char_to_interval 
