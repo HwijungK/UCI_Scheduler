@@ -284,14 +284,10 @@ get_class_combo <- function(name) {
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE Schedule COMBONATIONS
 ############################################################################################################################
-get_sched_combo <- function(names) {
-  ####
-  #debug.start.time <- Sys.time()
-  #names <- c(c("bio sci 90L", "bio sci 93"))
-  
+get_sched_combo <- function(depcodes, coursenums) {
   # create a list where each entry is a course containing a vector of viable class combos
   class.combos.l <- list()
-  for (name in names) {
+  for (name in paste(depcodes, coursenums, sep=" ")) {
     class.combos.l[[name]] = get_class_combo(name)
   }
   #print("class.combos.l:\n")
@@ -321,16 +317,16 @@ get_sched_combo <- function(names) {
   #debug.start.time <- Sys.time();
   
   # create a dataframe where row name is each class and one column contains string representations of all classes that conflict with said class
-  sched.status.open.check.l <- filter_status(sched.l, "OPEN")
-  sched.l <- sched.l[sched.status.open.check.l]
+  #sched.status.open.check.l <- filter_status(dep.data, sched.l, "OPEN")
+  #sched.l <- sched.l[sched.status.open.check.l]
   
-  sched.time.check.l<-filter_time_conflict(sched.l)
+  sched.time.check.l<-filter_time_conflict(dep.data, sched.l)
   sched.l <- sched.l[sched.time.check.l]
-  
+
   return(sched.l)
 }
 #takes in a list of possible schedules and returns a logical vector for classes that are not full
-filter_status <- function(sched.l, status) {
+filter_status <- function(dep.data, sched.l, status) {
   lapply(sched.l, \(x) {
     statuses <- filter(dep.data, Code %in% x)$Status
     #print(statuses)
@@ -346,7 +342,8 @@ filter_status <- function(sched.l, status) {
 }
 
 # takes in a list of possible schedules and returns a logical vector
-filter_time_conflict <- function(sched.l) {
+filter_time_conflict <- function(dep.data, sched.l) {
+  # create a vector of course codes present in each schedule
   class.v <- unique(unlist(sched.l))
   class.compatable.df <- data.frame(compatable=rep("", length(class.v)))
   row.names(class.compatable.df) <- class.v
@@ -402,9 +399,16 @@ filter_time_conflict <- function(sched.l) {
 
 
 #### TESTING
+# start.time <- Sys.time()
+# dep.data <- search_course(c("I&C SCI", "I&C SCI", "WRITING", "MATH"), c("32", "6B", "60", "3A")) |>
+#   create_date_time()
+# sched.l <- get_sched_combo(c("I&C SCI", "I&C SCI", "WRITING", "MATH"), c("32", "6B", "60", "3A"))
+# cat("Time: ", as.character(Sys.time() - start.time), "\n")
 
 start.time <- Sys.time()
-sched.l <- get_sched_combo(c("I&C Sci 32"))
+dep.data <- search_course(c("BIO SCI", "BIO SCI", "MATH"), c("2A", "93", "3A")) |>
+  create_date_time()
+sched.l <- get_sched_combo(c("BIO SCI", "BIO SCI", "MATH"), c("2A", "93", "3A"))
 cat("Time: ", as.character(Sys.time() - start.time), "\n")
 
 #using bio sci 93, i&c sci 32, I&C sci 6b

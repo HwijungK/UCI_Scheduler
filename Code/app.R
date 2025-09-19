@@ -55,7 +55,7 @@ server <- function(input, output, session) {
   output$cal.plot <- renderPlot({
     cal.plots[[i()]]
   })
-  output$debug <- renderText({i()})
+  output$debug <- renderText({cal.plots[[i()]]$labels$title})
 }
 
 shinyApp(ui, server)

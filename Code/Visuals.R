@@ -35,4 +35,3 @@ for (i in 1:length(sched.l)) {
   
   cal.plots[[i]] <- cal.plot
 }
-
