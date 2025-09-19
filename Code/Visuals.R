@@ -28,14 +28,15 @@ get_plots <- function(sched.l, dep.data) {
     cal.plot <- ggplot(data = cal, aes(label = courseTitle)) +
       geom_rect(aes(xmin=day_of_week-.45, xmax = day_of_week+.45, ymin = start_times, ymax = end_times)) +
       geom_label(aes(x = day_of_week, y =start_times), nudge_y = -.15, label.padding = unit(.25,"lines"), label.size=.25) +
-      scale_y_reverse(breaks = 7:24, limits = c(24:7), labels = c(7:12, 1:12)) +
+      scale_y_reverse(breaks = 7:24, limits = c(24,7), labels = c(7:12, 1:12)) +
+      #scale_y_reverse(limits = c(24,7)) +
       scale_x_continuous(breaks = 2:6, labels =  c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")) +
       labs(x = "Days", y = "Time", title = paste("Codes:", paste(courses.in.sched$Code, collapse = ","))) +
       theme(panel.grid.major.x = element_blank(),
             panel.grid.minor.x = element_line(linewidth = 3))
     
     cal.plots[[i]] <- cal.plot
-    
+    print("LOG")
   }
   return (cal.plots)
 }
