@@ -3,37 +3,23 @@ library(httr2)
 library(jsonlite)
 library(tidyverse)
 
-base_url <- "https://anteaterapi.com/v2/rest/websoc"
+# return the response from ant eater api given the string for year and quarter (Fall, Spring, Summer, Winter)
+get_soc_response <- function(year, quarter) {
+  base_url <- "https://anteaterapi.com/v2/rest/websoc"
+  
+  soc_response <- NULL
+  soc_response <- request(base_url) |>
+    req_url_query(
+      "year"=year,
+      "quarter"=quarter
+    ) |>
+    req_perform() |>
+    resp_body_json()
+  
+  return (soc_response)
+}
 
-soc_response <- NULL
-soc_response <- request(base_url) |>
-  req_url_query(
-    "year"="2025",
-    "quarter"="Fall"
-  ) |>
-  req_perform() |>
-  resp_body_json()
-
-# soc_response |>
-#   pluck('data', 'schools', 8, 'departments', 2, 'courses', 3, 'sections', 1) |>
-#   glimpse()
-
-# # returns glimpse of school
-# soc_response |>
-#   pluck('data', 'schools', 9, 'departments', 2, 'courses', 5, 'sections', 1, 'meetings') |>
-#   View()
-# 
-# # returns list of school names
-# soc_response |> 
-#   pluck('data', 'schools',) |>
-#     map_dfr(
-#       function(x) {
-#         tibble(
-#           schoolName = x |> pluck("schoolName")
-#         )
-#       }
-#     )
-
+# returns a data frame containing all courses of a quarter
 get_whole_catalog <- function() {
     d <- soc_response |>
     pluck('data', 'schools') |>
@@ -96,28 +82,7 @@ get_whole_catalog <- function() {
     return(d)
 }
 
-dept.school <- soc_response |>
-  pluck('data', 'schools') |>
-  map_dfr(
-    \(schools.list) {
-      tibble(
-        schools.list |>
-          pluck("departments") |>
-          map_dfr(
-            \(dep.list) {
-              tibble(
-                  school = schools.list |> pluck('schoolName'),
-                  deptCode = dep.list |> pluck('deptCode'),
-              )
-            }
-          )
-      )
-    }
-  )
-dept.school <- aggregate(list(deptCode = dept.school$deptCode), by = list(school = dept.school$school), FUN = paste)
-
-
-
+# returns a data frame consisting of sections in specified courses. takes in depcodes and courenums
 search_course <- function(depcodes, coursenums) {
   # #schools <- c("Donald Bren School of Information and Computer Sciences","School of Physical Sciences")
   # depcodes <- c("I&C SCI", "MATH")
@@ -189,6 +154,33 @@ search_course <- function(depcodes, coursenums) {
     )
   return(sched.data)
 }
+
+
+########################################################################################################################################################
+
+
+soc_response <- get_soc_response('2025', 'Fall')
+
+dept.school <- soc_response |>
+  pluck('data', 'schools') |>
+  map_dfr(
+    \(schools.list) {
+      tibble(
+        schools.list |>
+          pluck("departments") |>
+          map_dfr(
+            \(dep.list) {
+              tibble(
+                school = schools.list |> pluck('schoolName'),
+                deptCode = dep.list |> pluck('deptCode'),
+              )
+            }
+          )
+      )
+    }
+  )
+dept.school <- aggregate(list(deptCode = dept.school$deptCode), by = list(school = dept.school$school), FUN = paste)
+
 
 
 

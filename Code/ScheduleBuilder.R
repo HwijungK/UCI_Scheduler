@@ -8,94 +8,14 @@ library(lubridate)
 library(dplyr)
 library(sets)
 library(stringr)
-# 
-# googledrive::drive_auth()
-# gs4_auth()
-# setwd("C:/Users/Hwijung/Documents/R Projects/shinydir1/UCISched")
-# 
-# #write.csv(airquality, file = "sample.csv")
-# 
-# #td <- drive_get("https://drive.google.com/drive/folders/14t1T06SD9Ur5ftA9dwyeVUNqQ0Jzi64W")
-# #drive_upload("sample.csv", name = "Sample1", type = "spreadsheet", path = as_id(td)) # uploads to google drive. will create new every time, use drive_update to update
-# #drive_put("sample.csv", name = "Sample1", type = "document", path = as_id(td)) #uploads if filename doesn't exist, updates otherwise
-# #target <- drive_get("https://docs.google.com/spreadsheets/d/1AME0L3sTRBiqflLlgYnn8YcySaaOml_3K2VDkWC4lGQ/edit?gid=0#gid=0")
-# #drive_download(target, type = "csv", path = "webreg.csv")
-# ## list all google sheets
-# #meta <- gs4_find("Copy of Web Reg")
-# 
-# 
-# 
-# 
-# 
-# gs <- gs4_get("https://docs.google.com/spreadsheets/d/1AME0L3sTRBiqflLlgYnn8YcySaaOml_3K2VDkWC4lGQ/edit?gid=0#gid=0")
-# 
-# index <- 1#index of google sheet
-# dep.raw.data <- read_sheet("https://docs.google.com/spreadsheets/d/1AME0L3sTRBiqflLlgYnn8YcySaaOml_3K2VDkWC4lGQ/edit?gid=0#gid=0", sheet = index)
-# 
-# 
-# dep.data <- dep.raw.data
-# dep.abrv <- paste(gs$sheets$name[index], " ", sep = "")
-# 
-# # names columns of data frame
-# colnames(dep.data) <- unlist(strsplit("Code,Type,Sec,Units,Instructor,Modality,Time,Place,Final,Max,Enr,WL,Req,Nor,Rstr,Textbooks,Web,Status", ","))
-# 
-# header.rows <- NULL ## Logical Vector that Stores rows that are headers or null
-# course.col <- NULL ## new column that contains the name of the course in front of each entry
-# curr.course <- NULL
-# 
-# #############################################################################################################
-# #-------------------------------------------------------- Format Data
-# #############################################################################################################
-# #dep.data <- t
-# 
-# for (i in 1:nrow(dep.data)) {
-#   c <- unlist(dep.data[[i,1]])[1]
-#   if (!is.null((c))) {
-#     c <- as.character(c)
-#     if (startsWith(c, dep.abrv)) {
-#       curr.course <- c
-#     } else if (!is.null(curr.course)) {
-#       course.col[i] <- curr.course
-#     }
-#   }
-#   if (is.null(c)) {
-#     header.rows[i] <- T
-#   }
-#   else {
-#     header.rows[i] <- (c == "Code" || startsWith(c, dep.abrv) || is.null(curr.course))
-#     }
-# }
-# 
-# for(i in 1:ncol(dep.data)) {
-#   if (class(dep.data[1,i][[1]]) == "list") {
-#     print(i)
-#     dep.data[i] <- as.vector(dep.data[i])
-#   }
-# }
-# 
-# #Add Raw.Course column
-# dep.data <- cbind("Course.Raw" = course.col, dep.data)
-# 
-# # Remove All rows that are not Classes
-# dep.data <- dep.data[!header.rows,]
-# 
-# 
-# # removed original numbering of rows which are now messed up after deleting certain rows
-# row.names(dep.data) <- NULL
-# 
-# # create new columns for course names
-# course.identifier <- gsub("[ ]+", " ", trimws(substr(dep.data$Course.Raw, stop = str_locate(dep.data$Course.Raw, "\\*") - 1, start = 1)))
-# course.name <- gsub("[ ]+", " ", (trimws(substr(dep.data$Course.Raw, start = str_locate(dep.data$Course.Raw, "\\*") + 1, stop = unlist(lapply(str_locate_all(dep.data$Course.Raw, "\\*"), "[[", 2, 1)) - 1))))
-# dep.data <- cbind(Course.Identifier=course.identifier, Course.Name=course.name, dep.data)
 
 ##############################################################################################################################################################################
 #--------------------------------------------------------------------Finding classes via name
 ##############################################################################################################################################################################
 
-find_classes <- function(name) {
-  #return(filter(dep.data, str_equal(Course.Name, name, ignore_case = T)|str_equal(Course.Identifier, name, ignore_case = T)|str_equal(Course.Raw, name, ignore_case = T)))
+
+find_classes <- function(name, dep.data) {
   return(filter(dep.data, str_equal(courseTitle, name, ignore_case = T)|str_equal(paste(deptCode, courseNumber, sep = " "), name, ignore_case = T)))
-  
 }
 
 ##############################################################################################################################################################################
@@ -229,7 +149,7 @@ create_date_time <- function(dep.data) {
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE CLASS SECTION COMBONATIONS
 ############################################################################################################################
-get_class_combo <- function(name) {
+get_class_combo <- function(name, dep.data) {
   # Return vector of codes that represent all possible combinations of sections you can take for a give class
   #name <- "I&C Sci   6D     *DISCRET MATH FOR CS*      (Prerequisites)"
   #name <- "I&C Sci   31     *INTRO TO PROGRMMING*      (Prerequisites)"
@@ -238,7 +158,7 @@ get_class_combo <- function(name) {
 
   
   # Creates subset with only classes in specific course
-  classes.in.course <- find_classes(name) |>
+  classes.in.course <- find_classes(name, dep.data) |>
     mutate(
       # Creates Letter column which contains the Letter of Section (Ex: 3A --> A)
       Letter = gsub("([0-9])", "", Sec),
@@ -284,11 +204,11 @@ get_class_combo <- function(name) {
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE Schedule COMBONATIONS
 ############################################################################################################################
-get_sched_combo <- function(depcodes, coursenums) {
+get_sched_combo <- function(depcodes, coursenums, dep.data) {
   # create a list where each entry is a course containing a vector of viable class combos
   class.combos.l <- list()
   for (name in paste(depcodes, coursenums, sep=" ")) {
-    class.combos.l[[name]] = get_class_combo(name)
+    class.combos.l[[name]] = get_class_combo(name, dep.data)
   }
   #print("class.combos.l:\n")
   #print(class.combos.l)
@@ -317,8 +237,8 @@ get_sched_combo <- function(depcodes, coursenums) {
   #debug.start.time <- Sys.time();
   
   # create a dataframe where row name is each class and one column contains string representations of all classes that conflict with said class
-  #sched.status.open.check.l <- filter_status(dep.data, sched.l, "OPEN")
-  #sched.l <- sched.l[sched.status.open.check.l]
+  sched.status.open.check.l <- filter_status(dep.data, sched.l, "OPEN")
+  sched.l <- sched.l[sched.status.open.check.l]
   
   sched.time.check.l<-filter_time_conflict(dep.data, sched.l)
   sched.l <- sched.l[sched.time.check.l]
@@ -404,12 +324,6 @@ filter_time_conflict <- function(dep.data, sched.l) {
 #   create_date_time()
 # sched.l <- get_sched_combo(c("I&C SCI", "I&C SCI", "WRITING", "MATH"), c("32", "6B", "60", "3A"))
 # cat("Time: ", as.character(Sys.time() - start.time), "\n")
-
-start.time <- Sys.time()
-dep.data <- search_course(c("BIO SCI", "BIO SCI", "MATH"), c("2A", "93", "3A")) |>
-  create_date_time()
-sched.l <- get_sched_combo(c("BIO SCI", "BIO SCI", "MATH"), c("2A", "93", "3A"))
-cat("Time: ", as.character(Sys.time() - start.time), "\n")
 
 #using bio sci 93, i&c sci 32, I&C sci 6b
 #16 # original

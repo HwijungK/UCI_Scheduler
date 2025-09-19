@@ -1,13 +1,13 @@
 # BUILD A SCHEDULE
 
-
-
-f.startTime <- Sys.time()
-sched.l <- get_sched_combo(c("bio sci 93", "I&C Sci 32", "Stats 67"))
-for (i in 1:length(sched.l)) {
-  print(paste(sched.l[[i]], collapse = ", "))
+build_schedule <- function(deptcode, coursenum) {
+  start.time <- Sys.time()
+  dep.data <<- search_course(deptcode, coursenum) |>
+    create_date_time()
+  sched.l <- get_sched_combo(deptcode, coursenum, dep.data)
+  cat("Time: ", as.character(Sys.time() - start.time), "\n")
+  
+  cat("Total Possible Schedules: ", length(sched.l))
+  cat("Time Taken:", round(Sys.time() - start.time, 2))
+  return (sched.l)
 }
-cat("Total Possible Schedules: ", length(sched.l))
-cat("Time Taken:", round(Sys.time() - f.startTime, 2))
-
-

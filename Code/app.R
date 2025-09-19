@@ -1,4 +1,5 @@
 library(shinydashboard)
+library(bslib)
 
 ui <- dashboardPage(
   dashboardHeader(
@@ -8,6 +9,13 @@ ui <- dashboardPage(
     
   ),
   dashboardBody(
+    box(
+      # Course Selection
+      width = 10,
+      textInput("courses.text", "Search Courses"),
+      input_task_button("courses.submit", "GO"),
+      textOutput("courses.output")
+    ),
     box(
       width = 10,
       uiOutput("slider"),
@@ -26,16 +34,15 @@ ui <- dashboardPage(
 
 i <- reactiveVal(5)
 server <- function(input, output, session) {
+  # sched list selection
   observeEvent(input$inc.plot.index, {
     old_val <- i()
-    i(min(old_val + 1, length(cal.plots)))  # cap at max
-    #cat("Next Button Clicked! old i:", old_val, " new i:", i(), "\n")
+    i(min(old_val + 1, length(cal.plots())))
   })
   
   observeEvent(input$dec.plot.index, {
     old_val <- i()
-    i(max(old_val - 1, 1))  # cap at min
-    #cat("Previous Button Clicked! old i:", old_val, " new i:", i(), "\n")
+    i(max(old_val - 1, 1))
   })
   
   observeEvent(input$plot.index.slider, {
@@ -45,17 +52,42 @@ server <- function(input, output, session) {
     sliderInput("plot.index.slider",
                 label = "Choose Index",
                 min = 1,
-                max = length(cal.plots),
+                max = length(cal.plots()),
                 value = i(),
                 step = 1,
                 animate = F,
                 width = '80%')
   })
-  
   output$cal.plot <- renderPlot({
-    cal.plots[[i()]]
+    cal.plots()[[i()]]
   })
-  output$debug <- renderText({cal.plots[[i()]]$labels$title})
+  output$debug <- renderText({
+    as.character(courses.df()[[1]])
+    })
+  
+  # course selection
+  courses.df <- eventReactive(input$courses.submit, ignoreNULL = FALSE, {
+    c.list <- input$courses.text %>%
+      strsplit(",[ ]*") %>%
+      unlist() %>%
+      sub("^(.*) (.*)$", replacement = "\\1;\\2", .) %>%
+      strsplit(';')
+    
+    do.call(args = c.list, what = rbind) %>%
+      as.data.frame()
+  })
+  sched.l <- reactive({
+    build_schedule(courses.df()[[1]],courses.df()[[2]])
+  })
+  cal.plots <-reactive({
+    get_plots(sched.l(), dep.data)
+  })
+  output$courses.output <- renderText({
+    #paste(courses.df()[[1]], courses.df()[[2]], collase = ", ", sep = " ")'
+    as.character(courses.df())
+  })
 }
 
 shinyApp(ui, server)
+
+
