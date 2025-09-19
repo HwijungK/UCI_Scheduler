@@ -14,7 +14,7 @@ library(stringr)
 ##############################################################################################################################################################################
 
 
-find_classes <- function(name) {
+find_classes <- function(name, dep.data) {
   return(filter(dep.data, str_equal(courseTitle, name, ignore_case = T)|str_equal(paste(deptCode, courseNumber, sep = " "), name, ignore_case = T)))
 }
 
@@ -149,7 +149,7 @@ create_date_time <- function(dep.data) {
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE CLASS SECTION COMBONATIONS
 ############################################################################################################################
-get_class_combo <- function(name) {
+get_class_combo <- function(name, dep.data) {
   # Return vector of codes that represent all possible combinations of sections you can take for a give class
   #name <- "I&C Sci   6D     *DISCRET MATH FOR CS*      (Prerequisites)"
   #name <- "I&C Sci   31     *INTRO TO PROGRMMING*      (Prerequisites)"
@@ -158,7 +158,7 @@ get_class_combo <- function(name) {
 
   
   # Creates subset with only classes in specific course
-  classes.in.course <- find_classes(name) |>
+  classes.in.course <- find_classes(name, dep.data) |>
     mutate(
       # Creates Letter column which contains the Letter of Section (Ex: 3A --> A)
       Letter = gsub("([0-9])", "", Sec),
@@ -204,11 +204,11 @@ get_class_combo <- function(name) {
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE Schedule COMBONATIONS
 ############################################################################################################################
-get_sched_combo <- function(depcodes, coursenums) {
+get_sched_combo <- function(depcodes, coursenums, dep.data) {
   # create a list where each entry is a course containing a vector of viable class combos
   class.combos.l <- list()
   for (name in paste(depcodes, coursenums, sep=" ")) {
-    class.combos.l[[name]] = get_class_combo(name)
+    class.combos.l[[name]] = get_class_combo(name, dep.data)
   }
   #print("class.combos.l:\n")
   #print(class.combos.l)
@@ -237,8 +237,8 @@ get_sched_combo <- function(depcodes, coursenums) {
   #debug.start.time <- Sys.time();
   
   # create a dataframe where row name is each class and one column contains string representations of all classes that conflict with said class
-  #sched.status.open.check.l <- filter_status(dep.data, sched.l, "OPEN")
-  #sched.l <- sched.l[sched.status.open.check.l]
+  sched.status.open.check.l <- filter_status(dep.data, sched.l, "OPEN")
+  sched.l <- sched.l[sched.status.open.check.l]
   
   sched.time.check.l<-filter_time_conflict(dep.data, sched.l)
   sched.l <- sched.l[sched.time.check.l]
