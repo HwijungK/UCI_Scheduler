@@ -8,94 +8,14 @@ library(lubridate)
 library(dplyr)
 library(sets)
 library(stringr)
-# 
-# googledrive::drive_auth()
-# gs4_auth()
-# setwd("C:/Users/Hwijung/Documents/R Projects/shinydir1/UCISched")
-# 
-# #write.csv(airquality, file = "sample.csv")
-# 
-# #td <- drive_get("https://drive.google.com/drive/folders/14t1T06SD9Ur5ftA9dwyeVUNqQ0Jzi64W")
-# #drive_upload("sample.csv", name = "Sample1", type = "spreadsheet", path = as_id(td)) # uploads to google drive. will create new every time, use drive_update to update
-# #drive_put("sample.csv", name = "Sample1", type = "document", path = as_id(td)) #uploads if filename doesn't exist, updates otherwise
-# #target <- drive_get("https://docs.google.com/spreadsheets/d/1AME0L3sTRBiqflLlgYnn8YcySaaOml_3K2VDkWC4lGQ/edit?gid=0#gid=0")
-# #drive_download(target, type = "csv", path = "webreg.csv")
-# ## list all google sheets
-# #meta <- gs4_find("Copy of Web Reg")
-# 
-# 
-# 
-# 
-# 
-# gs <- gs4_get("https://docs.google.com/spreadsheets/d/1AME0L3sTRBiqflLlgYnn8YcySaaOml_3K2VDkWC4lGQ/edit?gid=0#gid=0")
-# 
-# index <- 1#index of google sheet
-# dep.raw.data <- read_sheet("https://docs.google.com/spreadsheets/d/1AME0L3sTRBiqflLlgYnn8YcySaaOml_3K2VDkWC4lGQ/edit?gid=0#gid=0", sheet = index)
-# 
-# 
-# dep.data <- dep.raw.data
-# dep.abrv <- paste(gs$sheets$name[index], " ", sep = "")
-# 
-# # names columns of data frame
-# colnames(dep.data) <- unlist(strsplit("Code,Type,Sec,Units,Instructor,Modality,Time,Place,Final,Max,Enr,WL,Req,Nor,Rstr,Textbooks,Web,Status", ","))
-# 
-# header.rows <- NULL ## Logical Vector that Stores rows that are headers or null
-# course.col <- NULL ## new column that contains the name of the course in front of each entry
-# curr.course <- NULL
-# 
-# #############################################################################################################
-# #-------------------------------------------------------- Format Data
-# #############################################################################################################
-# #dep.data <- t
-# 
-# for (i in 1:nrow(dep.data)) {
-#   c <- unlist(dep.data[[i,1]])[1]
-#   if (!is.null((c))) {
-#     c <- as.character(c)
-#     if (startsWith(c, dep.abrv)) {
-#       curr.course <- c
-#     } else if (!is.null(curr.course)) {
-#       course.col[i] <- curr.course
-#     }
-#   }
-#   if (is.null(c)) {
-#     header.rows[i] <- T
-#   }
-#   else {
-#     header.rows[i] <- (c == "Code" || startsWith(c, dep.abrv) || is.null(curr.course))
-#     }
-# }
-# 
-# for(i in 1:ncol(dep.data)) {
-#   if (class(dep.data[1,i][[1]]) == "list") {
-#     print(i)
-#     dep.data[i] <- as.vector(dep.data[i])
-#   }
-# }
-# 
-# #Add Raw.Course column
-# dep.data <- cbind("Course.Raw" = course.col, dep.data)
-# 
-# # Remove All rows that are not Classes
-# dep.data <- dep.data[!header.rows,]
-# 
-# 
-# # removed original numbering of rows which are now messed up after deleting certain rows
-# row.names(dep.data) <- NULL
-# 
-# # create new columns for course names
-# course.identifier <- gsub("[ ]+", " ", trimws(substr(dep.data$Course.Raw, stop = str_locate(dep.data$Course.Raw, "\\*") - 1, start = 1)))
-# course.name <- gsub("[ ]+", " ", (trimws(substr(dep.data$Course.Raw, start = str_locate(dep.data$Course.Raw, "\\*") + 1, stop = unlist(lapply(str_locate_all(dep.data$Course.Raw, "\\*"), "[[", 2, 1)) - 1))))
-# dep.data <- cbind(Course.Identifier=course.identifier, Course.Name=course.name, dep.data)
 
 ##############################################################################################################################################################################
 #--------------------------------------------------------------------Finding classes via name
 ##############################################################################################################################################################################
 
+
 find_classes <- function(name) {
-  #return(filter(dep.data, str_equal(Course.Name, name, ignore_case = T)|str_equal(Course.Identifier, name, ignore_case = T)|str_equal(Course.Raw, name, ignore_case = T)))
   return(filter(dep.data, str_equal(courseTitle, name, ignore_case = T)|str_equal(paste(deptCode, courseNumber, sep = " "), name, ignore_case = T)))
-  
 }
 
 ##############################################################################################################################################################################
