@@ -2,6 +2,7 @@ library(ggplot2)
 library(tidyverse)
 
 get_plots <- function(sched.l, dep.data) {
+  b.start.time <- Sys.time()
   cal.plots <- list()
   
   for (i in 1:length(sched.l)) {
@@ -36,7 +37,9 @@ get_plots <- function(sched.l, dep.data) {
             panel.grid.minor.x = element_line(linewidth = 3))
     
     cal.plots[[i]] <- cal.plot
+    
   }
+  cat("Build plot time: ", (Sys.time() - b.start.time), '\n')
   return (cal.plots)
 }
 

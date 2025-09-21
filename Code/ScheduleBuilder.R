@@ -238,14 +238,14 @@ get_sched_combo <- function(depcodes, coursenums, dep.data) {
   
   # create a dataframe where row name is each class and one column contains string representations of all classes that conflict with said class
   filter.start.time <- Sys.time()
-  sched.status.open.check.l <- filter_status(dep.data, sched.l, "OPEN")
+  sched.status.open.check.l <- filter_status(dep.data, sched.l, c("OPEN", "Waitl"))
   sched.l <- sched.l[sched.status.open.check.l]
-  cat("Time to filter status:", Sys.time() - filter.start.time)
+  cat("Time to filter status:", (Sys.time() - filter.start.time), "\n")
   
   filter.start.time <- Sys.time()
   sched.time.check.l<-filter_time_conflict(dep.data, sched.l)
   sched.l <- sched.l[sched.time.check.l]
-  cat("Time to filter time conflicts:", Sys.time - filter.start.time)
+  cat("Time to filter time conflicts:", (Sys.time() - filter.start.time), "\n")
   
   return(sched.l)
 }
