@@ -36,7 +36,6 @@ get_plots <- function(sched.l, dep.data) {
             panel.grid.minor.x = element_line(linewidth = 3))
     
     cal.plots[[i]] <- cal.plot
-    print("LOG")
   }
   return (cal.plots)
 }
