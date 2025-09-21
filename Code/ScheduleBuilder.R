@@ -240,7 +240,7 @@ get_sched_combo <- function(depcodes, coursenums, dep.data) {
   filter.start.time <- Sys.time()
   sched.status.open.check.l <- filter_status(dep.data, sched.l, "OPEN")
   sched.l <- sched.l[sched.status.open.check.l]
-  cat("Time to filter status:", Sys.time() = filter.start.time)
+  cat("Time to filter status:", Sys.time() - filter.start.time)
   
   filter.start.time <- Sys.time()
   sched.time.check.l<-filter_time_conflict(dep.data, sched.l)

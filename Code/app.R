@@ -1,5 +1,6 @@
 library(shinydashboard)
 library(bslib)
+library(magrittr)
 
 ui <- dashboardPage(
   dashboardHeader(
