@@ -1,6 +1,8 @@
 # BUILD A SCHEDULE
 
 build_schedule <- function(deptcode, coursenum) {
+  debug.d <<- deptcode
+  debug.c <<- coursenum
   start.time <- Sys.time()
   dep.data <<- search_course(deptcode, coursenum) |>
     create_date_time()

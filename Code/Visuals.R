@@ -31,7 +31,7 @@ get_plots <- function(sched.l, dep.data) {
       geom_label(aes(x = day_of_week, y =start_times), nudge_y = -.15, label.padding = unit(.25,"lines"), label.size=.25) +
       scale_y_reverse(breaks = 7:24, limits = c(24,7), labels = c(7:12, 1:12)) +
       #scale_y_reverse(limits = c(24,7)) +
-      scale_x_continuous(breaks = 2:6, labels =  c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")) +
+      scale_x_continuous(limits = c(2,6), breaks = 2:6, labels =  c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")) +
       labs(x = "Days", y = "Time", title = paste("Codes:", paste(courses.in.sched$Code, collapse = ","))) +
       theme(panel.grid.major.x = element_blank(),
             panel.grid.minor.x = element_line(linewidth = 3))
