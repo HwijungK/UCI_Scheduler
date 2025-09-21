@@ -269,7 +269,7 @@ filter_status <- function(dep.data, sched.l, status) {
 filter_time_conflict <- function(dep.data, sched.l) {
   # create a vector of course codes present in each schedule
   class.v <- unique(unlist(sched.l))
-  class.compatable.df <- data.frame(compatable=rep("", length(class.v)))
+  class.compatable.df <<- data.frame(compatable=rep("", length(class.v)))
   row.names(class.compatable.df) <- class.v
   
   for(c1 in 1: (length(class.v) - 1)) {
@@ -296,8 +296,8 @@ filter_time_conflict <- function(dep.data, sched.l) {
       }
       
       if (compatable) {
-        class.compatable.df[c1,1] <- paste(class.compatable.df[c1,1], trimws(class.v[c2]))
-        class.compatable.df[c2,1] <- paste(class.compatable.df[c2,1], trimws(class.v[c1]))
+        class.compatable.df[c1,1] <<- paste(class.compatable.df[c1,1], trimws(class.v[c2]))
+        class.compatable.df[c2,1] <<- paste(class.compatable.df[c2,1], trimws(class.v[c1]))
       }
     }
 }

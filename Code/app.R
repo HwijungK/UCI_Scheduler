@@ -78,6 +78,7 @@ server <- function(input, output, session) {
       as.data.frame()
   })
   sched.l <- reactive({
+    #print(courses.df()[[1]])
     build_schedule(courses.df()[[1]],courses.df()[[2]])
   })
   cal.plots <-reactive({
