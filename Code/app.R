@@ -26,8 +26,8 @@ ui <- dashboardPage(
     ),
     box(
       width = 10,
-      height =800,
-      plotOutput("cal.plot", height = 700),
+      height =1200,
+      plotOutput("cal.plot", height = 800),
       textOutput("debug")
     )
   )
@@ -82,7 +82,7 @@ server <- function(input, output, session) {
     build_schedule(courses.df()[[1]],courses.df()[[2]])
   })
   cal.plots <-reactive({
-    get_plots(sched.l(), dep.data)
+    get_plots(sched.l(), get_depdata(courses.df()[[1]], courses.df()[[2]]))
   })
   output$courses.output <- renderText({
     #paste(courses.df()[[1]], courses.df()[[2]], collase = ", ", sep = " ")'
