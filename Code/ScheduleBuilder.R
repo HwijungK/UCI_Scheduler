@@ -200,7 +200,6 @@ get_class_combo <- function(name, dep.data) {
 # DEMO
 #get_class_combo("I&C Sci   6B     *BOOL LOG & DISC STR*      (Prerequisites)")
 
-
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE Schedule COMBONATIONS
 ############################################################################################################################
@@ -239,7 +238,7 @@ get_sched_combo <- function(depcodes, coursenums, dep.data) {
   debug.ogsched <<- sched.l
   # create a dataframe where row name is each class and one column contains string representations of all classes that conflict with said class
   filter.start.time <- Sys.time()
-  sched.status.open.check.l <- filter_status(dep.data, sched.l, c("OPEN", "Waitl"))
+  sched.status.open.check.l <- filter_status(dep.data, sched.l, c("OPEN", "Waitl", "FULL"))
   sched.l <- sched.l[sched.status.open.check.l]
   cat("Time to filter status:", (Sys.time() - filter.start.time), "\n")
   debug.status.sched.l <<- sched.l
@@ -287,12 +286,13 @@ filter_time_conflict <- function(dep.data, sched.l) {
       # 
       int_combo <- expand_grid(filter(dep.data, Code == class.v[c1])$intervals[[1]],
                                filter(dep.data, Code == class.v[c2])$intervals[[1]])
+      debug.int_combo <<- int_combo
       for (i in 1:nrow(int_combo)) {
-        if (!(lubridate::is.interval(int_combo[i,1]) & lubridate::is.interval(int_combo[i,2]))) {
+        if (!(lubridate::is.interval(int_combo[[i,1]]) & lubridate::is.interval(int_combo[[i,2]]))) {
           compatable <- FALSE
           break;
         }
-        else if (lubridate::int_overlaps(int_combo[i,1], int_combo[i,2])) {
+        else if (lubridate::int_overlaps(int_combo[[i,1]], int_combo[[i,2]])) {
           compatable <- FALSE
           break;
         }
