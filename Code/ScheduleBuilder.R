@@ -200,7 +200,6 @@ get_class_combo <- function(name, dep.data) {
 # DEMO
 #get_class_combo("I&C Sci   6B     *BOOL LOG & DISC STR*      (Prerequisites)")
 
-
 ############################################################################################################################
 #-----------------------------------------------------------------------------CREATE Schedule COMBONATIONS
 ############################################################################################################################
@@ -270,40 +269,67 @@ filter_status <- function(dep.data, sched.l, status) {
 
 # takes in a list of possible schedules and returns a logical vector
 filter_time_conflict <- function(dep.data, sched.l) {
+  ### DEBUG
+  filter.start.time <- Sys.time()
   # create a vector of course codes present in each schedule
   class.v <- unique(unlist(sched.l))
   class.compatable.df <- data.frame(compatable=rep("", length(class.v)))
+  
   row.names(class.compatable.df) <- class.v
   
   for(c1 in 1: (length(class.v) - 1)) {
     for (c2 in (c1+1):length(class.v)) {
       compatable = T
-      intervals <- c((filter(dep.data, Code == class.v[c1])$intervals[[1]]),
-                     (filter(dep.data, Code == class.v[c2])$intervals[[1]]))
-      int_combn <- combn(as.list(intervals), 2,simplify = T)
-      if (any(is.na(intervals))) {
-        compatable <- FALSE
+      # intervals <- c((filter(dep.data, Code == class.v[c1])$intervals[[1]]),
+      #                (filter(dep.data, Code == class.v[c2])$intervals[[1]]))
+      # int_combn <- combn(as.list(intervals), 2,simplify = T)
+      # 
+      int_combo <- expand_grid(filter(dep.data, Code == class.v[c1])$intervals[[1]],
+                               filter(dep.data, Code == class.v[c2])$intervals[[1]])
+      debug.int_combo <<- int_combo
+      for (i in 1:nrow(int_combo)) {
+        if (!(lubridate::is.interval(int_combo[[i,1]]) & lubridate::is.interval(int_combo[[i,2]]))) {
+          compatable <- FALSE
+          break;
+        }
+        else if (lubridate::int_overlaps(int_combo[[i,1]], int_combo[[i,2]])) {
+          compatable <- FALSE
+          break;
+        }
       }
-      else {
-        compatable <- apply(int_combn, 2, \(x) {
-        lubridate::int_overlaps(x[[1]], x[[2]])
-        }) |>
-          (\(x) !x)() |>
-          all()
-      }
-      
-      ## DEBUG
-      if (is.na(compatable)) {
-        print(intervals)
-        print(!any(is.na(intervals)))
-      }
-      
+      # if (any(is.na(intervals))) {
+      #   compatable <- FALSE
+      # }
+      # else {
+      #   # compatable <- apply(int_combn, 2, \(x) {
+      #   # lubridate::int_overlaps(x[[1]], x[[2]])
+      #   # }) |>
+      #   #   (\(x) !x)() |>
+      #   #   all()
+      #   
+      #   for(i in 1:ncol(int_combn)) {
+      #     if (lubridate::int_overlaps(int_combn[[1,i]], int_combn[[2,i]])) {
+      #       compatable <- FALSE
+      #       break;
+      #     }
+      #   }
+      # }
+      # 
+      # ## DEBUG
+      # if (is.na(compatable)) {
+      #   print(intervals)
+      #   print(!any(is.na(intervals)))
+      # }
+      # 
       if (compatable) {
         class.compatable.df[c1,1] <- paste(class.compatable.df[c1,1], trimws(class.v[c2]))
         class.compatable.df[c2,1] <- paste(class.compatable.df[c2,1], trimws(class.v[c1]))
       }
     }
-}
+  }
+  debug.c.c.df <<- class.compatable.df
+  cat("compatable.df calculations: ", (filter.start.time - Sys.time()), "\n")
+  filter.start.time <- Sys.time()
   
   # removes schedules that have overlapping classes on sched.l
   sched.time.check.l <- rep(T, length(sched.l))
@@ -321,7 +347,10 @@ filter_time_conflict <- function(dep.data, sched.l) {
       if (!sched.time.check.l[i]) break;
     }
   }
+  cat("overlapping sched calculations: ", (filter.start.time - Sys.time()), "\n")
   return (sched.time.check.l)
+  
+  
 }
 
 
@@ -336,6 +365,3 @@ filter_time_conflict <- function(dep.data, sched.l) {
 #16 # original
 #12 # improved char_to_interval 
 #4 "idk lmao
-
-
-
