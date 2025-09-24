@@ -38,7 +38,7 @@ server <- function(input, output, session) {
   # sched list selection
   observeEvent(input$inc.plot.index, {
     old_val <- i()
-    i(min(old_val + 1, length(cal.plots())))
+    i(min(old_val + 1, length(sched.l())))
   })
   
   observeEvent(input$dec.plot.index, {
@@ -53,14 +53,14 @@ server <- function(input, output, session) {
     sliderInput("plot.index.slider",
                 label = "Choose Index",
                 min = 1,
-                max = length(cal.plots()),
+                max = length(sched.l()),
                 value = i(),
                 step = 1,
                 animate = F,
                 width = '80%')
   })
   output$cal.plot <- renderPlot({
-    cal.plots()[[i()]]
+    get_plots(sched.l()[i()], get_depdata(courses.df()[[1]], courses.df()[[2]]))
   })
   output$debug <- renderText({
     as.character(courses.df()[[1]])
@@ -73,16 +73,12 @@ server <- function(input, output, session) {
       unlist() %>%
       sub("^(.*) (.*)$", replacement = "\\1;\\2", .) %>%
       strsplit(';')
-    
     do.call(args = c.list, what = rbind) %>%
       as.data.frame()
   })
   sched.l <- reactive({
     #print(courses.df()[[1]])
     build_schedule(courses.df()[[1]],courses.df()[[2]])
-  })
-  cal.plots <-reactive({
-    get_plots(sched.l(), get_depdata(courses.df()[[1]], courses.df()[[2]]))
   })
   output$courses.output <- renderText({
     #paste(courses.df()[[1]], courses.df()[[2]], collase = ", ", sep = " ")'
