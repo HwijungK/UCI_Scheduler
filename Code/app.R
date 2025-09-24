@@ -85,6 +85,7 @@ server <- function(input, output, session) {
     get_plots(sched.l(), get_depdata(courses.df()[[1]], courses.df()[[2]]))
   })
   output$courses.output <- renderText({
+    #paste(courses.df()[[1]], courses.df()[[2]], collase = ", ", sep = " ")'
     as.character(courses.df())
   })
 }

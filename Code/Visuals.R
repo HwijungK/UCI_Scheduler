@@ -37,7 +37,6 @@ get_plots <- function(sched.l, dep.data) {
             panel.grid.minor.x = element_line(linewidth = 3))
     
     cal.plots[[i]] <- cal.plot
-    
   }
   cat("Build plot time: ", (Sys.time() - b.start.time), '\n')
   debug.plots <<- cal.plots
