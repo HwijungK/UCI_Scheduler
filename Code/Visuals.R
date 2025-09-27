@@ -2,6 +2,7 @@ library(ggplot2)
 library(tidyverse)
 
 get_plots <- function(sched.l, dep.data) {
+  if (is.null(sched.l)) {return(NULL)}
   b.start.time <- Sys.time()
   cal.plots <- list()
   

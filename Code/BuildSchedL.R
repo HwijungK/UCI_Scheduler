@@ -1,11 +1,13 @@
 # BUILD A SCHEDULE
 get_depdata <- function(deptcode, coursenum) {
+  if (any(deptcode == "")) {return(NULL)}
   dep.data <- search_course(deptcode, coursenum) |>
     create_date_time()
   debug.dep.data <<- dep.data
   return(dep.data)
 }
 build_schedule <- function(deptcode, coursenum) {
+  if (any(deptcode == "")) {return(NULL)}
   debug.d <<- deptcode
   debug.c <<- coursenum
   start.time <- Sys.time()

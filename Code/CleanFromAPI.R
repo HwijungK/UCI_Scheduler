@@ -84,6 +84,10 @@ get_whole_catalog <- function() {
 
 # returns a data frame consisting of sections in specified courses. takes in depcodes and courenums
 search_course <- function(depcodes, coursenums) {
+  # capitalizes course codes
+  depcodes <- str_to_upper(depcodes)
+  coursenums <- str_to_upper(coursenums)
+  cat('searching for course code', paste(depcodes, coursenums, sep = " ", collapse = ", "))
   # #schools <- c("Donald Bren School of Information and Computer Sciences","School of Physical Sciences")
   # depcodes <- c("I&C SCI", "MATH")
   # coursenums <- c("31", "3A")

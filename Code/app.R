@@ -13,6 +13,7 @@ source("ScheduleBuilder.R")
 source("Visuals.R")
 
 ui <- dashboardPage(
+  skin = 'green',
   dashboardHeader(
     title = "UCI Schedule Crafter"
   ),
@@ -20,6 +21,7 @@ ui <- dashboardPage(
     
   ),
   dashboardBody(
+    height = '4000px',
     box(
       # Course Selection
       width = 10,
@@ -36,7 +38,7 @@ ui <- dashboardPage(
     ),
     box(
       width = 10,
-      height =1200,
+      height =1000,
       plotOutput("cal.plot", height = 800),
       textOutput("debug")
     )
@@ -70,10 +72,12 @@ server <- function(input, output, session) {
                 width = '80%')
   })
   output$cal.plot <- renderPlot({
-    get_plots(sched.l()[i()], get_depdata(courses.df()[[1]], courses.df()[[2]]))
+    p <- get_plots(sched.l()[i()], get_depdata(courses.df()[[1]], courses.df()[[2]]))
+    if (is.null(p)) return()
+    else {p}
   })
   output$debug <- renderText({
-    output$cal.plot()
+    paste(sched.l()[[i()]], collapse = ", ")
     })
   
   # course selection
@@ -92,7 +96,8 @@ server <- function(input, output, session) {
   })
   output$courses.output <- renderText({
     #paste(courses.df()[[1]], courses.df()[[2]], collase = ", ", sep = " ")'
-    as.character(courses.df())
+    paste("Created Schedule For: ",
+          paste(str_to_upper(courses.df()[[1]]), str_to_upper(courses.df()[[2]]), collapse = ", ", sep = " "))
   })
 }
 
