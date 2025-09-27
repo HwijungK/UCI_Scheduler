@@ -33,9 +33,11 @@ get_plots <- function(sched.l, dep.data) {
       scale_y_reverse(breaks = 7:20, limits = c(20,7), labels = c(7:12, 1:8)) +
       #scale_y_reverse(limits = c(24,7)) +
       scale_x_continuous( limits = c(1.5,6.5),breaks = 2:6, labels =  c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")) +
-      labs(x = "Days", y = "Time", title = paste("Codes:", paste(courses.in.sched$Code, collapse = ","))) +
+      labs(x = "Days", y = "Time", title = "Data from Anteater API") +
       theme(panel.grid.major.x = element_blank(),
-            panel.grid.minor.x = element_line(linewidth = 3))
+            panel.grid.minor.x = element_line(linewidth = 3),
+            axis.text = element_text(size = 11),
+            axis.title = element_text(size = 14))
     
     cal.plots[[i]] <- cal.plot
   }

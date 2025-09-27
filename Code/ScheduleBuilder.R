@@ -337,6 +337,9 @@ filter_time_conflict <- function(dep.data, sched.l) {
     sched <- sched.l[[i]]
     for (c1 in 1:(length(sched)-1)) {
       for (c2 in (c1 + 1):length(sched)) {
+        if (c2 > length(sched)) break
+        print(sched[c2])
+        print(class.compatable.df[as.character(sched[c1]), 1])
         if (!grepl(sched[c2], class.compatable.df[as.character(sched[c1]), 1])) {
           sched.time.check.l[i] <- F
           #print(strsplit(class.compatable.df[as.character(sched[c1]),1], " "))
