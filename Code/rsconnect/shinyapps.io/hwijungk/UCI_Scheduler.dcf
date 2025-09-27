@@ -1,0 +1,13 @@
+name: UCI_Scheduler
+title: UCI_Scheduler
+username: hwijungk
+account: hwijungk
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15569364
+bundleId: 10954790
+url: https://hwijungk.shinyapps.io/UCI_Scheduler/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: issues

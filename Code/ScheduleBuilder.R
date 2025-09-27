@@ -1,12 +1,12 @@
 #UCI Sched THIS IS THE RIGHT ONE!!!!!!!!!!!!!!!!!
 
-library(googlesheets4)
-library(googledrive)
+#library(googlesheets4)
+#library(googledrive)
 library(tidyverse)
 library(readr)
 library(lubridate)
 library(dplyr)
-library(sets)
+#library(sets)
 library(stringr)
 
 ##############################################################################################################################################################################

@@ -1,6 +1,16 @@
 library(shinydashboard)
 library(bslib)
 library(magrittr)
+library(here)
+
+#source(here::here("Code", "BuildSchedL.R"))
+#source(here::here("Code", "CleanFromAPI.R"))
+#source(here::here("Code", "ScheduleBuilder.R"))
+#source(here::here("Code", "Visuals.R"))
+source("BuildSchedL.R")
+source("CleanFromAPI.R")
+source("ScheduleBuilder.R")
+source("Visuals.R")
 
 ui <- dashboardPage(
   dashboardHeader(
@@ -63,7 +73,7 @@ server <- function(input, output, session) {
     get_plots(sched.l()[i()], get_depdata(courses.df()[[1]], courses.df()[[2]]))
   })
   output$debug <- renderText({
-    as.character(courses.df()[[1]])
+    output$cal.plot()
     })
   
   # course selection
