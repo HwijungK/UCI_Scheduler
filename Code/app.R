@@ -31,8 +31,9 @@ ui <- page_fillable(
           status = "info",
           # Course Selection
           width = NULL,
-          tags$p("enter courses seperated by commas (ex. \"bio sci 93, math 3a, i&c sci 32\")", style = "font-size:10px;"),
-          textInput("courses.text", ""),
+          textInput("courses.text", tags$p("enter courses seperated by commas (ex. \"bio sci 93, math 3a, i&c sci 32\")", style = "font-size:10px;")),
+          checkboxInput("show.full", tags$a("Include Full Classes", style = "font-size: 12px"), F),
+          checkboxInput("show.wait", tags$a("Include Waitlist Classes", style = "font-size: 12px"), F),
           input_task_button("courses.submit", "GO"),
           span(textOutput("courses.output"), style = "font-size: 10px")
         )
@@ -109,13 +110,16 @@ server <- function(input, output, session) {
   })
   sched.l <- reactive({
     #print(courses.df()[[1]])
-    build_schedule(courses.df()[[1]],courses.df()[[2]])
+    build_schedule(courses.df()[[1]],courses.df()[[2]], class.status())
   })
   output$courses.output <- renderText({
     #paste(courses.df()[[1]], courses.df()[[2]], collase = ", ", sep = " ")'
     t <- paste("Created Schedule For: ",
           paste(str_to_upper(courses.df()[[1]]), str_to_upper(courses.df()[[2]]), collapse = ", ", sep = " "))
     t
+  })
+  class.status <- reactive({
+    c("OPEN", "Waitl", "FULL")[c(T, input$show.wait, input$show.full)]
   })
 }
 

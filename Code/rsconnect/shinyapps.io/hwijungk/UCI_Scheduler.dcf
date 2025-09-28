@@ -5,7 +5,7 @@ account: hwijungk
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 15569364
-bundleId: 10954790
+bundleId: 10962734
 url: https://hwijungk.shinyapps.io/UCI_Scheduler/
 version: 1
 asMultiple: FALSE
