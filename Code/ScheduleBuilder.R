@@ -1,12 +1,7 @@
-#UCI Sched THIS IS THE RIGHT ONE!!!!!!!!!!!!!!!!!
-
-#library(googlesheets4)
-#library(googledrive)
 library(tidyverse)
 library(readr)
 library(lubridate)
 library(dplyr)
-#library(sets)
 library(stringr)
 
 ##############################################################################################################################################################################
@@ -297,30 +292,6 @@ filter_time_conflict <- function(dep.data, sched.l) {
           break;
         }
       }
-      # if (any(is.na(intervals))) {
-      #   compatable <- FALSE
-      # }
-      # else {
-      #   # compatable <- apply(int_combn, 2, \(x) {
-      #   # lubridate::int_overlaps(x[[1]], x[[2]])
-      #   # }) |>
-      #   #   (\(x) !x)() |>
-      #   #   all()
-      #   
-      #   for(i in 1:ncol(int_combn)) {
-      #     if (lubridate::int_overlaps(int_combn[[1,i]], int_combn[[2,i]])) {
-      #       compatable <- FALSE
-      #       break;
-      #     }
-      #   }
-      # }
-      # 
-      # ## DEBUG
-      # if (is.na(compatable)) {
-      #   print(intervals)
-      #   print(!any(is.na(intervals)))
-      # }
-      # 
       if (compatable) {
         class.compatable.df[c1,1] <- paste(class.compatable.df[c1,1], trimws(class.v[c2]))
         class.compatable.df[c2,1] <- paste(class.compatable.df[c2,1], trimws(class.v[c1]))
@@ -338,8 +309,8 @@ filter_time_conflict <- function(dep.data, sched.l) {
     for (c1 in 1:(length(sched)-1)) {
       for (c2 in (c1 + 1):length(sched)) {
         if (c2 > length(sched)) break
-        print(sched[c2])
-        print(class.compatable.df[as.character(sched[c1]), 1])
+        #print(sched[c2])
+        #print(class.compatable.df[as.character(sched[c1]), 1])
         if (!grepl(sched[c2], class.compatable.df[as.character(sched[c1]), 1])) {
           sched.time.check.l[i] <- F
           #print(strsplit(class.compatable.df[as.character(sched[c1]),1], " "))
@@ -352,19 +323,4 @@ filter_time_conflict <- function(dep.data, sched.l) {
   }
   cat("overlapping sched calculations: ", (filter.start.time - Sys.time()), "\n")
   return (sched.time.check.l)
-  
-  
 }
-
-
-#### TESTING
-# start.time <- Sys.time()
-# dep.data <- search_course(c("I&C SCI", "I&C SCI", "WRITING", "MATH"), c("32", "6B", "60", "3A")) |>
-#   create_date_time()
-# sched.l <- get_sched_combo(c("I&C SCI", "I&C SCI", "WRITING", "MATH"), c("32", "6B", "60", "3A"))
-# cat("Time: ", as.character(Sys.time() - start.time), "\n")
-
-#using bio sci 93, i&c sci 32, I&C sci 6b
-#16 # original
-#12 # improved char_to_interval 
-#4 "idk lmao

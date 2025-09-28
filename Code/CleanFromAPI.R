@@ -88,10 +88,6 @@ search_course <- function(depcodes, coursenums) {
   depcodes <- str_to_upper(depcodes)
   coursenums <- str_to_upper(coursenums)
   cat('searching for course code', paste(depcodes, coursenums, sep = " ", collapse = ", "))
-  # #schools <- c("Donald Bren School of Information and Computer Sciences","School of Physical Sciences")
-  # depcodes <- c("I&C SCI", "MATH")
-  # coursenums <- c("31", "3A")
-  # #depcodes <- "I&C SCI"
   
   schools <- NULL
   for (i in 1:17) {
@@ -161,7 +157,6 @@ search_course <- function(depcodes, coursenums) {
 
 
 ########################################################################################################################################################
-
 
 soc_response <- get_soc_response('2025', 'Fall')
 

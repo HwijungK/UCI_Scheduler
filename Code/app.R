@@ -3,10 +3,6 @@ library(bslib)
 library(magrittr)
 library(here)
 
-#source(here::here("Code", "BuildSchedL.R"))
-#source(here::here("Code", "CleanFromAPI.R"))
-#source(here::here("Code", "ScheduleBuilder.R"))
-#source(here::here("Code", "Visuals.R"))
 source("BuildSchedL.R")
 source("CleanFromAPI.R")
 source("ScheduleBuilder.R")
@@ -80,6 +76,7 @@ server <- function(input, output, session) {
     i(input$plot.index.slider)
   })
   output$slider <- renderUI({
+    if (is.null(sched.l())) return (NULL)
     sliderInput("plot.index.slider",
                 label = "",
                 min = 1,
@@ -95,11 +92,13 @@ server <- function(input, output, session) {
     else {p}
   })
   output$debug <- renderText({
+    if (is.null(sched.l())) return ("")
     paste(sched.l()[[i()]], collapse = ", ")
     })
   
   # course selection
   courses.df <- eventReactive(input$courses.submit, ignoreNULL = FALSE, {
+    if (input$courses.text == "") return(NULL)
     c.list <- input$courses.text %>%
       strsplit(",[ ]*") %>%
       unlist() %>%
@@ -109,10 +108,14 @@ server <- function(input, output, session) {
       as.data.frame()
   })
   sched.l <- reactive({
+    if (is.null(courses.df())) return (NULL)
     #print(courses.df()[[1]])
     build_schedule(courses.df()[[1]],courses.df()[[2]], class.status())
   })
   output$courses.output <- renderText({
+    if (is.null(sched.l())) {
+      return (NULL)
+    }
     #paste(courses.df()[[1]], courses.df()[[2]], collase = ", ", sep = " ")'
     t <- paste("Created Schedule For: ",
           paste(str_to_upper(courses.df()[[1]]), str_to_upper(courses.df()[[2]]), collapse = ", ", sep = " "))
